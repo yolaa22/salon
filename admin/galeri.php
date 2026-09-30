@@ -1,0 +1,8 @@
+<?php
+require "auth.php"; require "../config/koneksi.php";
+if(isset($_GET['hapus'])){$id=(int)$_GET['hapus'];$koneksi->query("DELETE FROM galeri WHERE id_galeri=$id");header("Location:galeri.php");exit;}
+if($_SERVER['REQUEST_METHOD']==='POST'){$judul=$_POST['judul'];$gambar=$_POST['gambar'];$s=$koneksi->prepare("INSERT INTO galeri(judul,gambar) VALUES(?,?)");$s->bind_param("ss",$judul,$gambar);$s->execute();header("Location:galeri.php");exit;}
+$data=$koneksi->query("SELECT * FROM galeri ORDER BY id_galeri DESC");include "header.php";
+?>
+<div class="admin-wrap"><h1>Kelola Galeri</h1><div class="booking-box" style="margin:25px 0"><form method="post"><div class="form-grid"><div class="form-group"><label>Judul</label><input name="judul" required></div><div class="form-group"><label>URL Gambar</label><input name="gambar" placeholder="https://..." required></div></div><button class="btn">Tambah Gambar</button></form></div><div class="table-wrap"><table class="table"><tr><th>Gambar</th><th>Judul</th><th>Aksi</th></tr><?php while($r=$data->fetch_assoc()): ?><tr><td><img src="<?= htmlspecialchars($r['gambar']) ?>" width="100" height="70" style="object-fit:cover;border-radius:8px"></td><td><?= htmlspecialchars($r['judul']) ?></td><td><a class="small-btn danger" href="?hapus=<?= $r['id_galeri'] ?>" onclick="return confirm('Hapus?')">Hapus</a></td></tr><?php endwhile; ?></table></div></div>
+<?php include "footer.php"; ?>

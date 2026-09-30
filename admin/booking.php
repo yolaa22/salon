@@ -1,0 +1,7 @@
+<?php
+require "auth.php"; require "../config/koneksi.php";
+if(isset($_GET['status'],$_GET['id'])){$id=(int)$_GET['id'];$status=$_GET['status'];$allowed=['Menunggu','Dikonfirmasi','Selesai','Dibatalkan'];if(in_array($status,$allowed)){$s=$koneksi->prepare("UPDATE booking SET status=? WHERE id_booking=?");$s->bind_param("si",$status,$id);$s->execute();}header("Location:booking.php");exit;}
+$data=$koneksi->query("SELECT b.*,l.nama_layanan FROM booking b JOIN layanan l ON b.id_layanan=l.id_layanan ORDER BY b.id_booking DESC");include "header.php";
+?>
+<div class="admin-wrap"><h1>Data Booking</h1><p style="margin-bottom:20px">Kelola reservasi pelanggan.</p><div class="table-wrap"><table class="table"><tr><th>Nama</th><th>Kontak</th><th>Layanan</th><th>Tanggal</th><th>Jam</th><th>Status</th><th>Aksi</th></tr><?php while($r=$data->fetch_assoc()): ?><tr><td><b><?= htmlspecialchars($r['nama']) ?></b><br><small><?= htmlspecialchars($r['email']) ?></small></td><td><?= htmlspecialchars($r['no_hp']) ?></td><td><?= htmlspecialchars($r['nama_layanan']) ?></td><td><?= date('d/m/Y',strtotime($r['tanggal'])) ?></td><td><?= htmlspecialchars($r['jam']) ?></td><td><?= htmlspecialchars($r['status']) ?></td><td><a class="small-btn" href="?id=<?= $r['id_booking'] ?>&status=Dikonfirmasi">Konfirmasi</a> <a class="small-btn" href="?id=<?= $r['id_booking'] ?>&status=Selesai">Selesai</a> <a class="small-btn danger" href="?id=<?= $r['id_booking'] ?>&status=Dibatalkan">Batal</a></td></tr><?php endwhile; ?></table></div></div>
+<?php include "footer.php"; ?>
